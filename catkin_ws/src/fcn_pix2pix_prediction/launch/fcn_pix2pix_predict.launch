@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<launch>
+  <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch">
+    <arg name="camera" value="$(arg camera)"/>
+    <arg name="veh" value="$(arg veh)"/>
+		<arg name="color_width" value="640"/>
+		<arg name="color_height" value="480"/>
+  </include>
+
+  <group ns="$(arg veh)">
+    <group ns="$(arg camera)">
+      <node pkg="fcn_pix2pix_prediction" type="fcn_pix2pix_predict.py" name="fcn_pix2pix_predict_$(arg camera)" output="screen">
+        <param name="camera" type="str" value="$(arg camera)"/>
+        <param name="veh" type="str" value="$(arg veh)"/>
+      </node>
+
+      <!-- <node pkg="point_cloud" type="mask_to_point" name="mask_to_point" output="screen">
+        <param name="camera" type="str" value="$(arg camera)"/>
+        <param name="veh" type="str" value="$(arg veh)"/>
+        <remap from="mask" to="/mask_to_point/$(arg camera)"/>
+      </node> -->
+
+      <node pkg="point_cloud" type="pub_arti_pose" name="pub_arti_pose" output="screen">
+        <param name="camera" type="str" value="$(arg camera)"/>
+        <param name="veh" type="str" value="$(arg veh)"/>
+        <remap from="artifact_pose" to="/$(arg veh)/artifact_pose"/>
+      </node>
+    </group>
+  </group>
+</launch>
+
